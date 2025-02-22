@@ -5,6 +5,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 import time
 
+
 # 加载数据
 def load_data(file_path):
     with open(file_path, 'r', encoding='UTF-8') as f:
@@ -13,52 +14,64 @@ def load_data(file_path):
 
 # 训练模型并可视化
 def train_model(data, previous_model=None):
-    X = [item['features'] for item in data]  # 假设数据中有'features'字段
-    y = [item['label'] for item in data]      # 假设数据中有'label'字段
+    X = [item['features'] for item in data]
+    y = [item['label'] for item in data]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
-    model = previous_model if previous_model else RandomForestClassifier()  # 使用之前的模型
+    # 调试信息
+    print(f"Length of X_train: {len(X_train)}, Length of y_train: {len(y_train)}")
     
-    # 记录训练过程中的准确率
+    model = previous_model if previous_model else RandomForestClassifier()
+    
+    # 记录训练过程中的准确率和损失率
     train_accuracies = []
     test_accuracies = []
+    losses = []
     
-    plt.ion()  # 开启交互模式
+    plt.ion()
     fig, ax = plt.subplots()
     line1, = ax.plot([], [], label='Train Accuracy', color='blue')
     line2, = ax.plot([], [], label='Test Accuracy', color='orange')
-    ax.set_xlim(1, 300)
-    ax.set_ylim(0, 1)
+    line3, = ax.plot([], [], label='Loss', color='red')
+    #ax.set_xlim(0, 500)
+    ax.set_ylim(-0.1, 1.1)
     ax.set_xlabel('Training Iterations')
-    ax.set_ylabel('Accuracy')
-    ax.set_title('Model Training Accuracy')
+    ax.set_ylabel('Accuracy / Loss')
+    ax.set_title('Model Training Accuracy and Loss')
     ax.legend()
     
-    for i in range(1, 301):  # 训练300次
+
+    
+    for i in range(1, 501):
         model.fit(X_train, y_train)
         train_pred = model.predict(X_train)
         test_pred = model.predict(X_test)
         
         train_accuracy = accuracy_score(y_train, train_pred)
         test_accuracy = accuracy_score(y_test, test_pred)
+        loss = 1 - test_accuracy
         
         train_accuracies.append(train_accuracy)
         test_accuracies.append(test_accuracy)
+        losses.append(loss)
         
         # 更新图表
         line1.set_xdata(range(1, i + 1))
         line1.set_ydata(train_accuracies)
         line2.set_xdata(range(1, i + 1))
         line2.set_ydata(test_accuracies)
+        line3.set_xdata(range(1, i + 1))
+        line3.set_ydata(losses)
         
         ax.relim()
         ax.autoscale_view()
         plt.draw()
         plt.pause(0.1)  # 暂停以更新图表
         
-    plt.ioff()  # 关闭交互模式
-    plt.show()  # 显示最终图表
+    plt.ioff()
+    plt.show()
     
+
     return model
 
 # 反馈机制
@@ -75,12 +88,16 @@ if __name__ == "__main__":
     
     # 示例反馈数据（可以根据需要手动添加）
     new_feedback_data = [
-        {"features": [20.0, 10.1], "label": 0},
-        {"features": [32.0, 18.65], "label": 1},
-        {"features": [23.25, 9.7], "label": 0},
-        {"features": [35.55, 20.25], "label": 1},
-        {"features": [18.7, 16.85], "label": 0},
-        {"features": [27.3, 5.5], "label": 1}
+        {"features": [12.3, 24.2], "label": 0},
+        {"features": [21.1, 15.4], "label": 1},
+        {"features": [8.12, 22.45], "label": 0},
+        {"features": [21.5, 20.25], "label": 1},
+        {"features": [15.2, 12.3], "label": 0},
+        {"features": [18.1, 19.2], "label": 1},
+        {"features": [10.5, 12.7], "label": 0},
+        {"features": [20.2, 22.1], "label": 1},
+        {"features": [14.3, 16.4], "label": 0},
+        {"features": [17.5, 18.2], "label": 1}
     ]
     
     feedback(model, new_feedback_data)  # 增量学习

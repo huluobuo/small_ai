@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 import json
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
-import time
+
 
 
 # 加载数据
@@ -99,6 +100,7 @@ if __name__ == "__main__":
         {"features": [14.3, 16.4], "label": 0},
         {"features": [17.5, 18.2], "label": 1}
     ]
-    
-    feedback(model, new_feedback_data)  # 增量学习
-    model = train_model(data, model)  # 使用之前的模型进行增量学习
+
+    while True:
+        feedback(model, new_feedback_data)  # 增量学习
+        model = train_model(data, model)  # 使用之前的模型进行增量学习

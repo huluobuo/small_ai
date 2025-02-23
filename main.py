@@ -1,9 +1,20 @@
 # -*- coding: utf-8 -*-
+# e 眼晕
+print("Importing json...", end=" ")
 import json
+print("Done!")
+print("Importing matplotlib.pyplot...", end=" ")
 import matplotlib.pyplot as plt
+print("Done!")
+print("Importing sklearn.model_selection - train_test_split...", end=" ")
 from sklearn.model_selection import train_test_split
+print("Done!")
+print("Importing sklearn.ensemble - RandomForestClassifier...", end=" ")
 from sklearn.ensemble import RandomForestClassifier
+print("Done!")
+print("Importing sklearn.metrics - accuracy_score...", end=" ")
 from sklearn.metrics import accuracy_score
+print("Done!  Will start...\n")
 
 
 
@@ -15,12 +26,13 @@ def load_data(file_path):
 
 # 训练模型并可视化
 def train_model(data, previous_model=None):
+    print("Training model...", end=" ")
     X = [item['features'] for item in data]
     y = [item['label'] for item in data]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
     # 调试信息
-    print(f"Length of X_train: {len(X_train)}, Length of y_train: {len(y_train)}")
+    #print(f"Length of X_train: {len(X_train)}, Length of y_train: {len(y_train)}")
     
     model = previous_model if previous_model else RandomForestClassifier()
     
@@ -42,7 +54,7 @@ def train_model(data, previous_model=None):
     ax.legend()
     
 
-    
+    print("Done!\n\n")
     for i in range(1, 501):
         model.fit(X_train, y_train)
         train_pred = model.predict(X_train)
@@ -67,10 +79,13 @@ def train_model(data, previous_model=None):
         ax.relim()
         ax.autoscale_view()
         plt.draw()
+        print(f"Iteration {i}: Train Accuracy: {train_accuracy}, Test Accuracy: {test_accuracy}, Loss: {loss}", end="\r")
         plt.pause(0.1)  # 暂停以更新图表
         
     plt.ioff()
     plt.show()
+    print()
+    print(f"Final Train Accuracy: {train_accuracies[-1]}, Final Test Accuracy: {test_accuracies[-1]}, Final Loss: {losses[-1]}")
     
 
     return model
@@ -84,7 +99,9 @@ def feedback(model, new_data):
 
 # 主程序
 if __name__ == "__main__":
+    part = 1
     data = load_data('./data/data.json')
+    print(f"Part: - {part} -:")
     model = train_model(data)  # 初始训练
     
     # 示例反馈数据（可以根据需要手动添加）
@@ -102,5 +119,7 @@ if __name__ == "__main__":
     ]
 
     while True:
+        print(f"Part: - {part} -:")
         feedback(model, new_feedback_data)  # 增量学习
         model = train_model(data, model)  # 使用之前的模型进行增量学习
+        part += 1

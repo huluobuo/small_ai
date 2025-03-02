@@ -6,7 +6,7 @@ import openai
 # 加载环境变量
 load_dotenv()
 openai.api_base = "https://api.deepseek.com"
-openai.api_key = "sk-3168fd3ac35d4a1ba91149d4bb9a02ce"
+openai.api_key = "sk-*****************"
 
 # 初始化 Flask
 app = Flask(__name__)
